@@ -1,0 +1,141 @@
+import heartrate 
+# heartrate.trace(browser=True)
+import pandas as pd
+import numpy as np
+import numpy_financial as npf
+import matplotlib.pyplot as plt 
+import snoop
+
+first_pay_project_1 = 4080000
+first_pay_project_2 = 7880000
+monthly_pay_project_1 = 2000000
+monthly_pay_project_2 = 1800000
+inflation_per_year = [0.16, 0.16, 0.15, 0.13, 0.12, 0.1]
+people_max = 2514
+price_one = 2000
+price_two = 3000
+price_three = 4000
+aver_people_max = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+aver_people_vip = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+tax = 0
+
+table_incom_month_1 = pd.DataFrame()
+table_incom_month_1['aver_people_max 1'],table_incom_month_1['aver_people_max 2'],table_incom_month_1['aver_people_max 3']= range(10), range(10), range(10)
+table_incom_month_1['aver_people_max 4'],table_incom_month_1['aver_people_max 5'],table_incom_month_1['aver_people_max 6']= range(10), range(10), range(10)
+table_incom_month_1['aver_people_max 7'],table_incom_month_1['aver_people_max 8'],table_incom_month_1['aver_people_max 9']= range(10), range(10), range(10)
+table_incom_month_1['aver_people_max 10']= range(10)
+
+table_incom_month_2 = pd.DataFrame()
+table_incom_month_2['aver_people_max 1'],table_incom_month_2['aver_people_max 2'],table_incom_month_2['aver_people_max 3']= range(10), range(10), range(10)
+table_incom_month_2['aver_people_max 4'],table_incom_month_2['aver_people_max 5'],table_incom_month_2['aver_people_max 6']= range(10), range(10), range(10)
+table_incom_month_2['aver_people_max 7'],table_incom_month_2['aver_people_max 8'],table_incom_month_2['aver_people_max 9']= range(10), range(10), range(10)
+table_incom_month_2['aver_people_max 10']= range(10)
+for i in range( len(aver_people_vip) ):
+    proc_vip = aver_people_vip[i]
+    proc_other = (1 - proc_vip)/2
+    for j in range( len(aver_people_max) ):
+        CF_project_1 = np.array([-4080000])
+        CF_project_2 = np.array([-7880000])
+        people_max_month = aver_people_max[j]
+        people_aver = people_max_month * people_max
+        income = 0.94*people_aver * (2000*proc_other+3000*proc_other+4000*proc_vip)
+        x_1 = - monthly_pay_project_1 + income
+        x_2 = - monthly_pay_project_2 + income
+        CF_project_1 = np.append(CF_project_1, x_1)
+        CF_project_2 = np.append(CF_project_2, x_2)
+        table_incom_month_1.iloc[j:j+1,i:i+1] = CF_project_1[1]
+        table_incom_month_2.iloc[j:j+1,i:i+1] = CF_project_2[1]
+        # print("\n\nПроект №1 'Аренда + Аренда': ","\nЛюдей ходит:",aver_people_max[j],"\nЛюдей VIP:",proc_vip, '\n', CF_project_1[1])
+        # print("\nПроект №2 'Аренда + Покупка': ","\nЛюдей ходит:",aver_people_max[j],"\nЛюдей VIP:",proc_vip, '\n',CF_project_2[1])
+        
+# Сделать эксель таблицу на рабочий стол      
+def make_excel_table(table):
+    table.to_excel ('/Users/erickgaydin/Desktop/mydata_2.xlsx')
+
+
+
+table_NPV_1 = pd.DataFrame()
+table_NPV_1['aver_people_max 1'],table_NPV_1['aver_people_max 2'],table_NPV_1['aver_people_max 3']= range(10), range(10), range(10)
+table_NPV_1['aver_people_max 4'],table_NPV_1['aver_people_max 5'],table_NPV_1['aver_people_max 6']= range(10), range(10), range(10)
+table_NPV_1['aver_people_max 7'],table_NPV_1['aver_people_max 8'],table_NPV_1['aver_people_max 9']= range(10), range(10), range(10)
+table_NPV_1['aver_people_max 10']= range(10)
+
+table_NPV_2 = pd.DataFrame()
+table_NPV_2['aver_people_max 1'],table_NPV_2['aver_people_max 2'],table_NPV_2['aver_people_max 3']= range(10), range(10), range(10)
+table_NPV_2['aver_people_max 4'],table_NPV_2['aver_people_max 5'],table_NPV_2['aver_people_max 6']= range(10), range(10), range(10)
+table_NPV_2['aver_people_max 7'],table_NPV_2['aver_people_max 8'],table_NPV_2['aver_people_max 9']= range(10), range(10), range(10)
+table_NPV_2['aver_people_max 10']= range(10)
+
+IRR_1 = pd.DataFrame()
+IRR_1['aver_people_max 1'],IRR_1['aver_people_max 2'],IRR_1['aver_people_max 3']= range(10), range(10), range(10)
+IRR_1['aver_people_max 4'],IRR_1['aver_people_max 5'],IRR_1['aver_people_max 6']= range(10), range(10), range(10)
+IRR_1['aver_people_max 7'],IRR_1['aver_people_max 8'],IRR_1['aver_people_max 9']= range(10), range(10), range(10)
+IRR_1['aver_people_max 10']= range(10)
+
+IRR_2 = pd.DataFrame()
+IRR_2['aver_people_max 1'],IRR_2['aver_people_max 2'],IRR_2['aver_people_max 3']= range(10), range(10), range(10)
+IRR_2['aver_people_max 4'],IRR_2['aver_people_max 5'],IRR_2['aver_people_max 6']= range(10), range(10), range(10)
+IRR_2['aver_people_max 7'],IRR_2['aver_people_max 8'],IRR_2['aver_people_max 9']= range(10), range(10), range(10)
+IRR_2['aver_people_max 10']= range(10)
+
+PI_1 = pd.DataFrame()
+PI_1['aver_people_max 1'],PI_1['aver_people_max 2'],PI_1['aver_people_max 3']= range(10), range(10), range(10)
+PI_1['aver_people_max 4'],PI_1['aver_people_max 5'],PI_1['aver_people_max 6']= range(10), range(10), range(10)
+PI_1['aver_people_max 7'],PI_1['aver_people_max 8'],PI_1['aver_people_max 9']= range(10), range(10), range(10)
+PI_1['aver_people_max 10']= range(10)
+
+PI_2 = pd.DataFrame()
+PI_2['aver_people_max 1'],PI_2['aver_people_max 2'],PI_2['aver_people_max 3']= range(10), range(10), range(10)
+PI_2['aver_people_max 4'],PI_2['aver_people_max 5'],PI_2['aver_people_max 6']= range(10), range(10), range(10)
+PI_2['aver_people_max 7'],PI_2['aver_people_max 8'],PI_2['aver_people_max 9']= range(10), range(10), range(10)
+PI_2['aver_people_max 10']= range(10)
+NPV_1_z = np.array([])
+NPV_2_z = np.array([])
+aver_people_buy_np  = np.array([])
+aver_people_max_np  = np.array([])
+for k in range( len(table_incom_month_1) ):
+            
+    for l in range( len(table_incom_month_1) ):
+        CF_first_project = np.array([-4080000])
+        CF_second_project = np.array([-7880000])
+     
+        for j in range(5):
+                
+            CF_first_project = np.append(CF_first_project, 12 *  table_incom_month_1.iloc[l:l+1,k:k+1])
+            CF_second_project = np.append(CF_second_project, 12 * table_incom_month_2.iloc[l:l+1,k:k+1])
+                
+        IRR_1_1 = npf.irr(CF_first_project)
+        IRR_2_2 = npf.irr(CF_second_project)
+        NPV_1 = npf.npv(0.4 ,CF_first_project)
+        NPV_2 = npf.npv(0.4 ,CF_second_project)
+        table_NPV_1.iloc[l:l+1,k:k+1] = NPV_1
+        table_NPV_2.iloc[l:l+1,k:k+1] = NPV_2
+        IRR_1.iloc[l:l+1,k:k+1] = IRR_1_1*100
+        IRR_2.iloc[l:l+1,k:k+1] = IRR_2_2*100
+        PI_1.iloc[l:l+1,k:k+1] = round(NPV_1/4080000,3)
+        PI_2.iloc[l:l+1,k:k+1] = round(NPV_2/7880000,3)
+        NPV_1_z = np.append(NPV_1_z, NPV_1)
+        NPV_2_z = np.append(NPV_2_z, NPV_2)
+        aver_people_buy_np = np.append(aver_people_buy_np,k)
+        aver_people_max_np = np.append(aver_people_max_np,l)
+        
+table_NPV_1 = round(table_NPV_1,2)
+table_NPV_2 = round(table_NPV_2,2)
+
+def to_excel_tables():
+    table_NPV_1.to_excel ('/Users/erickgaydin/Desktop/NPV_project_1.xlsx')  
+    table_NPV_2.to_excel ('/Users/erickgaydin/Desktop/NPV_project_2.xlsx')  
+    IRR_1.to_excel ('/Users/erickgaydin/Desktop/IRR_project_1.xlsx')  
+    IRR_2.to_excel ('/Users/erickgaydin/Desktop/IRR_project_2.xlsx')     
+    PI_1.to_excel ('/Users/erickgaydin/Desktop/PI_project_1.xlsx')  
+    PI_2.to_excel ('/Users/erickgaydin/Desktop/PI_project_2.xlsx') 
+    
+import plotly.express as px
+df= pd.DataFrame()
+df['NVP 2'] = NPV_2_z
+df['Людей в месяц от нормы (%)'] = aver_people_max_np
+df['Людей с VIP пропусками (%)'] = aver_people_buy_np
+fig = px.scatter_3d(df, x='Людей с VIP пропусками (%)', y='Людей в месяц от нормы (%)', z='NVP 2',
+                   color='NVP 2',width=800, height = 800
+                   )
+fig.show() 
