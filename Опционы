@@ -1,0 +1,62 @@
+import heartrate 
+# heartrate.trace(browser=True)
+import pandas as pd
+import numpy as np
+import numpy_financial as npf
+import matplotlib.pyplot as plt 
+import snoop
+
+first_pay_project_1 = 4080000
+first_pay_project_2 = 7880000
+monthly_pay_project_1 = 2000000
+monthly_pay_project_2 = 1800000
+inflation_per_year = [0.16, 0.16, 0.15, 0.13, 0.12, 0.1]
+people_max = 2514
+price_one = 2000
+price_two = 3000
+price_three = 4000
+aver_people_max = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+aver_people_vip = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+tax = 0
+
+df = pd.DataFrame()
+df['Сколько людей ходят от максимума, %'] = range(100) 
+df['Сколько VIP клиентов, %'] = range(100) 
+df['Экономия'] = range(100) 
+k = -1 
+for i in range( len(aver_people_max) ):
+    people_go = aver_people_max[i]
+    people_vip = aver_people_vip[i]
+    people_other = (1 - people_vip)/2
+    people_go_bad = aver_people_max[i] * 0.9
+    for j in range( 30 ):
+        k = k + 1
+        real_people = 0.9 - 0.01 * j
+        income_pred = 2514 * 0.9 * (people_vip*4000 + 2*(people_other)*(2000 + 3000)  )
+        income_real = 2514 * real_people * (people_vip*4000 + 2*(people_other)*(2000 + 3000)  )
+        # print('При ходьбе на', round(real_people,3), 'Экономия будет ',round(income_pred -  income_real,2))
+        df.at[k, 'Сколько людей ходят от максимума, %'] = real_people
+        df.at[k, 'Сколько VIP клиентов, %'] = people_vip
+        df.at[k, 'Экономия'] = round(income_pred -  income_real,2)
+        
+# df.to_excel ('/Users/erickgaydin/Desktop/Опцион_первый.xlsx')          
+mean = df['Экономия'].mean()
+sqr = np.sqrt(np.var(df['Экономия']))
+print('Мат. ожидание экономии: ',round(mean,2))
+print('Стандартное отклонение экономии:',round(sqr,2))
+ 
+from scipy import stats
+df_1 = pd.DataFrame()
+df_1['Месяцев меньше нормы'] = range(13)
+df_1['Минимальная экономиая в год'] = range(13)
+df_1['Максимальная экономиая в год'] = range(13)
+for i in range(13):
+    expect = round(stats.binom.pmf(i, 12, 0.85),5)
+    payment = 100000
+    print('\nВероятность, что в год будет',i, 'месяцев, где будет ходить меньше нормы вне сезона', expect)
+    print('Мы экономим в год: от',12*round(expect*(mean-sqr),2) - payment,' до', 12*round(expect*(mean+sqr),2) - payment)
+    df_1.at[i,'Месяцев меньше нормы'] = i
+    df_1.at[i,'Минимальная экономиая в год'] = 12*round(expect*(mean-sqr),2) - payment
+    df_1.at[i,'Максимальная экономиая в год'] = 12*round(expect*(mean+sqr),2) - payment
+df_1['Минимальная экономиая в год'].mean(),   df_1['Максимальная экономиая в год'].mean()
+df_1.to_excel ('/Users/erickgaydin/Desktop/Опцион_спрос.xlsx')  
